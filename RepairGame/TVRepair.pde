@@ -54,14 +54,14 @@ class MasterTVRepair {
       image(TV, 80, 300, 300, 200);
     } else if ( HitCheck == 1 ) {
       ClearEff=true;
-      image(TVR, 82, 300, 298, 200);
+      image(TvTurnOn, 82, 300, 298, 200);
     }
 
 
     if (mousePressed == true) {
-      image(ude2, mouseX - 200, mouseY - 60, 200, 200);
+      image(ArmExtend, mouseX - 200, mouseY - 60, 200, 200);
     } else if (mouseX <= width/2) {
-      image(ude1, mouseX - 200, mouseY - 100, 200, 200);
+      image(ArmBended, mouseX - 200, mouseY - 100, 200, 200);
     }
     //命令文側
     image(Mission4, width/2+28, 30, 633, 738);

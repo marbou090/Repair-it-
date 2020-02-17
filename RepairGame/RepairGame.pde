@@ -43,7 +43,7 @@ AudioPlayer SUB;
 
 
 //配線ゲーム用宣言
-PImage den, den2, koka, zyu;
+PImage CableUp, CableDown, DeadBattery, Charging;
 int K = 0;
 int R, G, B;
 
@@ -58,7 +58,7 @@ PImage ManDefault, ManLove, Present1, Present2, Present3;
 PImage Nat1, Nat2, WaterPicture, Pipe1, Pipe2, Rench1, Rench2, ScoreBar;
 
 //テレビゲーム用の宣言
-PImage TV, TVR, ude1, ude2;
+PImage TV, TvTurnOn, ArmBended, ArmExtend;
 
 //抽象クラス画面遷移用宣言
 State state;
@@ -161,30 +161,30 @@ void setup() {
   Success=loadImage("success.png");
   Finish=loadImage("Finish.png");
   Miss=loadImage("miss.png");
-  den = loadImage("den.png");
-  den2 = loadImage("den2.png");
-  koka = loadImage("koka.png");
-  zyu = loadImage("zyuu.png");
-  NosePicture1 = loadImage("ha3 (1).png");
-  NosePicture2 = loadImage("ha3 (2).png");
-  Finger = loadImage("yu.png");
-  ManDefault = loadImage("h1.png");
-  ManLove = loadImage("h2.png");
-  Present1 = loadImage("p1.png");
-  Present2 = loadImage("p2.png");
-  Present3 = loadImage("p3.png");
-  Nat1 = loadImage("61.png");
-  Nat2 = loadImage("62.png");
-  WaterPicture =  loadImage("mizu.png");
-  Pipe1 =  loadImage("ha1.png");
-  Pipe2 =  loadImage("ha2.png");
-  Rench1 =  loadImage("re1.png");
-  Rench2 =  loadImage("re2.png");
+  CableUp = loadImage("CableUp.png");
+  CableDown = loadImage("CableDown.png");
+  DeadBattery = loadImage("DeadBattery.png");
+  Charging = loadImage("Charging.png");
+  NosePicture1 = loadImage("NoseAfter.png");
+  NosePicture2 = loadImage("NoseBefore.png");
+  Finger = loadImage("Finger.png");
+  ManDefault = loadImage("ManDefault.png");
+  ManLove = loadImage("ManLove.png");
+  Present1 = loadImage("NormalPresent.png");
+  Present2 = loadImage("GiriChocolate.png");
+  Present3 = loadImage("LoveChocolate.png");
+  Nat1 = loadImage("Screw1.png");
+  Nat2 = loadImage("Screw2.png");
+  WaterPicture =  loadImage("leakage.png");
+  Pipe1 =  loadImage("Pipe1.png");
+  Pipe2 =  loadImage("Pipe2.png");
+  Rench1 =  loadImage("Rench1.png");
+  Rench2 =  loadImage("Rench2.png");
   ScoreBar = loadImage("score.jpg");
   TV = loadImage("TV.png");
-  TVR = loadImage("TVR.png");
-  ude1 = loadImage("UM.png");
-  ude2 = loadImage("UN.png");
+  TvTurnOn = loadImage("TvTurnOn.png");
+  ArmBended = loadImage("ArmBended.png");
+  ArmExtend = loadImage("ArmExtend.png");
   ResultRank1=loadImage("rankA.png");
   ResultRank2=loadImage("rankB.png");
   ResultRank3=loadImage("rankC.png");

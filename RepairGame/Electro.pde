@@ -48,17 +48,17 @@ class MasterElectro {
 
   public void DoElectro() {
     imageMode(CORNER);
-    image(den, width/2+50, 480, 180, 350);
-    image(den2, width/2+50, -80, 180, 350);
+    image(CableUp, width/2+50, 480, 180, 350);
+    image(CableDown, width/2+50, -80, 180, 350);
 
     if ( G == 1 && R == 1 && B == 1 ) {
-      image(zyu, width/2+300, 280, 300, 200);
+      image(Charging, width/2+300, 280, 300, 200);
       ELC.rewind();
       ELC.play();
       ELC.rewind();
       println(G, R, B);
     } else {
-      image(koka, width/2+300, 280, 300, 200);
+      image(DeadBattery, width/2+300, 280, 300, 200);
     }
 
     strokeWeight(10);
