@@ -4,6 +4,7 @@ class Interception extends State {
       StartTime=millis()/1000;
       interception =new MasterInterception();
       Initialize=false;
+      NowScreen=2;
     }
     interception.DoInterception();
   }
@@ -13,7 +14,6 @@ class Interception extends State {
       NextGame=false;
       if (DebugMode) controlP5.remove("Nextgame");
       Initialize=true;
-      EffectFlag=false;
       return new StickFigure();
     }
     if (DebugMode&&mouseKey==1&&mouseX>width/8&&mouseX<width/8+50&&mouseY>height/8&&mouseY<height/8+50) {
@@ -22,7 +22,6 @@ class Interception extends State {
       Initialize=true;
       if (DebugMode) controlP5.remove("Nextgame");
       DoFigureMouse=false;
-      EffectFlag=false;
       return new StickFigure();
     }
     return this;
@@ -36,7 +35,9 @@ class MasterInterception {
   int EnemyVector;
   int CharacterPositionX;
   int BurretPositionY;
-  int StartTimer;
+
+  float BurretPositionX;
+  boolean MissFlag;
 
   //コンストラクタ
   MasterInterception() {
@@ -46,8 +47,16 @@ class MasterInterception {
     EnemyVector=0;
     CharacterPositionX=width/4;
     BurretPositionY=height/5;
+    BurretPositionX=EnemyPositionX;
     EffectFlag=true;
+    MissFlag=false;
     if (DebugMode) controlP5.addButton("Nextgame").setLabel(">").setPosition(width/8, height/8).setSize(50, 50);
+
+    for (int i = 0; i < 100; i++) {
+      PVector loc = new PVector(width/2, height/2);
+      PVector vec = new PVector(random(-1, 1)*12, random(-1, 1)*12);
+      spot[i] = new Spot(loc, vec, random(10, 30));
+    }
   }
 
   public void DoInterception() {
@@ -102,14 +111,14 @@ class MasterInterception {
       } else if (frameCount/20%2==0) {
         image(CharacterLeft2, CharacterPositionX, height/4*3-20);
       }
-      CharacterPositionX=CharacterPositionX-3;
+      CharacterPositionX=CharacterPositionX-8;
     } else if (mouseKey==1&&mouseX>920&&mouseX<1020&&mouseY>590&&mouseY<670) {
       if (frameCount/20%2==1) {
         image(CharacterRight1, CharacterPositionX, height/4*3-20);
       } else if (frameCount/20%2==0) {
         image(CharacterRight2, CharacterPositionX, height/4*3-20);
       }
-      CharacterPositionX=CharacterPositionX+3;
+      CharacterPositionX=CharacterPositionX+8;
     } else {
       image(CharacterFront, CharacterPositionX, height/4*3-20);
     }
@@ -131,10 +140,34 @@ class MasterInterception {
     } else if (EnemyPositionX<=60) {
       EnemyVector=1;
     }
-    //-------------弾---------------//
 
-    //------------------------------//
-    //--------------------------------------------------------------------------------------//
+    if (!ClearEff) {
+      //-------------弾---------------//
+      image(Burret, BurretPositionX, BurretPositionY);
+      BurretPositionY=BurretPositionY+10;
+      if (BurretPositionY>height/4*3-20) {
+        BurretPositionY=height/5;
+        BurretPositionX=EnemyPositionX;
+      }
+      //------------------------------//
+      //--------------------------------------------------------------------------------------//
+
+      //-----------------------------------当たり判定---------------------------------------//
+      if (BurretPositionY+110>height/4*3-20&&BurretPositionX+80<CharacterPositionX+70&&BurretPositionX+120>CharacterPositionX) {
+        BurretPositionX=EnemyPositionX;
+        BurretPositionY=height/5;
+        MissFlag=true;
+        GameMiss=true;
+      }
+      if (MissFlag) {
+        image(Miss, BurretPositionX, height/4*3-40, 160, 60);
+        if (BurretPositionY>height/2-50) {
+          MissFlag=false;
+          GameMiss=false;
+        }
+      }
+    }
+    //-------------------------------------------------------------------------------------//
 
     //端っこではみでないように白い箱を置いて隠す----------------------------------------------------------//
     noStroke();
@@ -156,7 +189,7 @@ class MasterInterception {
 
     if (ClearEff) {
       if (EffectFlag) {
-        StartTimer=millis();
+        SuccessTimer=millis();
         EffectFlag=false;
       }
       for (int i = 0; i < 100; i++) {
@@ -166,7 +199,7 @@ class MasterInterception {
       }
       Success.resize(500, 188);
       image(Success, width/2-250, height/2-94, 500, 188);
-      if (millis()-StartTimer>3000) {
+      if (millis()-SuccessTimer>2000) {
         NextGame=true;
       }
     }

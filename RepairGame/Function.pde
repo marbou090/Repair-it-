@@ -2,18 +2,7 @@ int Timer (int StartTime) {
   return millis()/1000-StartTime;
 }
 
-void keyPressed() {
-  if (key == CODED) {      // コード化されているキーが押された
-    if (keyCode == RIGHT) {    // キーコードを判定
-      KeyType = 1;
-    } else if (keyCode == LEFT) {
-      KeyType=2;
-    }
-  }
-  if (key==' ') {
-    KeyType=3;
-  }
-}
+
 
 boolean FrameCounter(int minute) {
   if (frameCount/minute%2==1) {
@@ -25,37 +14,86 @@ boolean FrameCounter(int minute) {
 
 void mousePressed()
 {
+  //TVゲーム用
+  if (NowScreen==5) {
 
-  /////////////
-  //デバッグ用
+    TSE.rewind();
+    TSE.play();
+    TSE.rewind();
 
-  //GameMiss=true;
-  ///////////////
+    if ( (535 <= mouseX && mouseX <= 555) && ( 185 <= mouseY && mouseY <= 205) ) {
+      HitCheck = 1;
+    } else if ( HitCheck == 0) {
+      HitCheck = 0;
+    }
+  }
 
+  //配線ゲーム用
+  if (NowScreen==6&& 490 <= mouseY && mouseY <= 570 ) {
+    if ( width/2+80 <= mouseX &&  mouseX <= width/2+105 ) {
+      K = 1;
+    } else if ( width/2+128 <= mouseX && mouseX <= width/2+155 ) { 
+      K = 2;
+    } else if ( width/2+175 <= mouseX && mouseX <= width/2+200 ) {
+      K = 3;
+    }
+  } else if ( 180 <= mouseY && mouseY <= 260 ) {
+    if ( width/2+80 <= mouseX && mouseX <= width/2+105 ) {
+      K = 3;
+    } else if ( width/2+128 <= mouseX && mouseX <= width/2+155 ) { 
+      K = 2;
+    } else if ( width/2+175 <= mouseX && mouseX <= width/2+200 ) {
+      K = 1;
+    }
+  } else {
+    K = 0;
+  }
+
+  //  鼻の骨折を治すゲーム用
+  if (NowScreen==9&& ( 345 <= mouseY && mouseY <= 365) ) {
+    HitCheck = 1;
+    NSEC.rewind();
+    NSEC.play();
+    NSEC.rewind();
+  } else if ( HitCheck == 0) {
+    HitCheck = 0;
+    NSE.rewind();
+    NSE.play();
+    NSE.rewind();
+  }
+
+  //  プレゼント選びゲーム用
+  if (NowScreen==8&& (260 <= mouseX && mouseX <= 420) && (480 <= mouseY && mouseY <= 605) ) {
+    HitCheck = 1;
+    SEC.rewind();
+    SEC.play();
+    SEC.rewind();
+  } else if (HitCheck == 0) {
+    HitCheck = 0;
+  }
+
+  //水道管ゲーム用
+  if (NowScreen==7) {
+    SEP.rewind();
+    SEP.play();
+    SEP.rewind();
+
+    if ( (width/2+405 <= mouseX && mouseX <= width/2+450) && ( 250 <= mouseY && mouseY <= 280) ) {
+      HitCheck++;
+    } else if ( HitCheck == 0) {
+      HitCheck = 0;
+    }
+  }
 
   //クリック
   if (mouseButton == LEFT) mouseKey = 1;
-
-  if (DoFigureMouse) {
-    // Find nearest joint to mouse position.
-    float minDist = MAX_FLOAT;
-    for (int i=0; i<joints.size(); i++)
-    {
-      float currentDist = dist(mouseX, mouseY, joints.get(i).x, joints.get(i).y);
-      if (currentDist < minDist)
-      {
-        minDist = currentDist;
-        movingJoint = i;
-      }
-    }
-  }
 }
 
-void mouseDragged(){
+void mouseDragged() {
   if (DoFigureMouse) {
-    if (movingJoint >=0){
-      joints.get(movingJoint).x = mouseX;
-      joints.get(movingJoint).y = mouseY;
+    if (movingJoint >=0) {
+      JointMove.get(movingJoint).x = mouseX;
+      JointMove.get(movingJoint).y = mouseY;
     }
   }
 }
@@ -64,10 +102,38 @@ void mouseDragged(){
 
 //離す
 void mouseReleased() {
-  /////////////
-  //デバッグ用
-  GameMiss=false;
-  ///////////////
+  if (NowScreen==6) {
+    if ( K == 1 ) {
+      if ( ( (490 <= mouseY && mouseY <= 570) && (width/2+80 <= mouseX &&  mouseX <= width/2+105) ) || ( (180 <= mouseY && mouseY <= 260) ) && ( (width/2+175 <= mouseX && mouseX <= width/2+200) ) ) {
+        G = 1;
+        if ( (R == 1 && B == 0) || (R == 0 && B == 1) || (R == 0 && B == 0) ) {
+          EL.rewind();
+          EL.play();
+          EL.rewind();
+        }
+      }
+    }
+    if ( K == 2 ) {
+      if ( ( (490 <= mouseY && mouseY <= 570) && (width/2+128 <= mouseX && mouseX <= width/2+155) ) || ( (180 <= mouseY && mouseY <= 260) ) && ( (width/2+128 <= mouseX && mouseX <= width/2+155) ) ) {
+        R = 1;
+        if ( (G == 1 && B == 0) || (G == 0 && B == 1) || (G == 0 && B == 0)  ) {
+          EL.rewind();
+          EL.play();
+          EL.rewind();
+        }
+      }
+    }
+    if ( K == 3 ) {
+      if ( ( (490 <= mouseY && mouseY <= 570) && (width/2+175 <= mouseX && mouseX <= width/2+200) ) || ( (180 <= mouseY && mouseY <= 260) ) && ( (width/2+80 <= mouseX &&  mouseX <= width/2+105) ) ) {
+        B = 1;
+        if ( (R == 1 && G == 0) || (R == 0 && G == 1) || (R == 0 && G == 0)  ) {
+          EL.rewind();
+          EL.play();
+          EL.rewind();
+        }
+      }
+    }
+  }
   if (mouseButton == LEFT) mouseKey = 0;
 }
 

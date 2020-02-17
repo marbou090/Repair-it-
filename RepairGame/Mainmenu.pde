@@ -1,12 +1,17 @@
 class MainMenu extends State {
   void drawState() {
     if (Initialize) {
+      NowScreen=1;
       StartTime=millis()/1000;
       NextGame=false;
       menu =new MasterMainMenu();
       Initialize=false;
       DebugMode=false;//
+      EffectFlag=true;
       mouseKey=0;
+      DoMusic=true;
+      Music=true;
+      imageMode(CORNER);
     }
     menu.DoMenu();
   }

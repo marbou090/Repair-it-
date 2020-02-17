@@ -1,47 +1,43 @@
-class OutOfInk extends State {
+
+class TVRepair extends State {
   void drawState() {
     if (Initialize) {
       StartTime=millis()/1000;
-      ink =new MasterOutOfInk();
+      tv_re =new MasterTVRepair();
       Initialize=false;
       ClearEff=false;
       EffectFlag=true;
-      NowScreen=4;
+      NowScreen=5;
     }
-    ink.DoOutOfInk();
+    tv_re.DoTVRepair();
   }
 
   State decideState() {
     if (NextGame) {
       NextGame=false;
-      if (DebugMode) controlP5.remove("Nextgame");
       Initialize=true;
-      return new Electro();
+      ClearEff=false;
+      if (DebugMode) controlP5.remove("Nextgame");
+      return new WaterPipe();
     }
     if (DebugMode&&mouseKey==1&&mouseX>width/8&&mouseX<width/8+50&&mouseY>height/8&&mouseY<height/8+50) {
       mouseKey=0;
-      ClearEff=false;
       NextGame=false;
+      ClearEff=false;
       Initialize=true;
       if (DebugMode) controlP5.remove("Nextgame");
       DoFigureMouse=false;
-      return new Electro();
+      return new WaterPipe();
     }
     return this;
   }
 }
 
-class MasterOutOfInk {
-  int ImageX, ImageY;
-  float Distance;//マウスドラッグがどれくらい動いたか
-  float DitanceSum;
+class MasterTVRepair {
 
   //コンストラクタ
-  MasterOutOfInk() {
-    ImageX=width/6;
-    ImageY=height/2;
-    Distance=0;
-    DitanceSum=0;
+  MasterTVRepair() {
+    HitCheck=0;
     if (DebugMode) controlP5.addButton("Nextgame").setLabel(">").setPosition(width/8, height/8).setSize(50, 50);
 
     for (int i = 0; i < 100; i++) {
@@ -51,33 +47,24 @@ class MasterOutOfInk {
     }
   }
 
-  public void DoOutOfInk() {
+  public void DoTVRepair() {
 
-
-    imageMode(CENTER);
-    image(Pen, ImageX, ImageY);
-    if (mousePressed&&mouseX>ImageX-160&&mouseX<ImageX+160&&mouseY>ImageY-70&&mouseY<ImageY+70) {
-      ImageX=mouseX;
-      ImageY=mouseY;
+    if (HitCheck == 0) {
+      imageMode(CORNER);
+      image(TV, 80, 300, 300, 200);
+    } else if ( HitCheck == 1 ) {
+      ClearEff=true;
+      image(TvTurnOn, 82, 300, 298, 200);
     }
 
-    if (mousePressed==true&&abs(pmouseY-mouseY)>1) {
-      Distance=Distance-(pmouseY-mouseY);
-      println(Distance);
-    }
 
-    if (frameCount/1000%20==0) {
-      DitanceSum=DitanceSum+abs(Distance);
-      if (DitanceSum>10000) {
-        ClearEff=true;
-      }
-    } else {
-      DistanceSum=0;
+    if (mousePressed == true) {
+      image(ArmExtend, mouseX - 200, mouseY - 60, 200, 200);
+    } else if (mouseX <= width/2) {
+      image(ArmBended, mouseX - 200, mouseY - 100, 200, 200);
     }
-
     //命令文側
-    imageMode(CORNER);
-    image(Mission3, width/2+28, 30, 633, 738);
+    image(Mission4, width/2+28, 30, 633, 738);
     Wall();
 
     if (ClearEff) {
@@ -91,7 +78,6 @@ class MasterOutOfInk {
         spot[i].fade();
       }
       Success.resize(500, 188);
-      imageMode(CORNER);
       image(Success, width/2-250, height/2-94, 500, 188);
       if (millis()-SuccessTimer>2000) {
         NextGame=true;
