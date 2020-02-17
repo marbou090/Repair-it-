@@ -8,17 +8,57 @@
  インクがでないペン
  */
 //----------------------------------------//
+Minim minim;
+
 
 //デバッグ用のボタン配置に使う
 import controlP5.*;
 ControlP5 controlP5; 
 
-//Handy用の宣言たち---------------------------------------------------//
+//Handy用の宣言たち
 import org.gicentre.handy.*; 
 HandyRenderer h;      // This does the sketchy drawing.
-ArrayList<PVector> joints;
+ArrayList<PVector> JointDraft;
+ArrayList<PVector> JointMove;
 int movingJoint; 
-//--------------------------------------------------------------------//
+
+//SE,BGM関連
+//音設定
+import ddf.minim.*;
+import ddf.minim.analysis.*;
+import ddf.minim.effects.*;
+import ddf.minim.signals.*;
+import ddf.minim.spi.*;
+import ddf.minim.ugens.*;
+AudioSnippet EL;
+AudioSnippet ELC;
+AudioSnippet NSE;
+AudioSnippet NSEC;
+AudioSnippet SEC;
+AudioSnippet TSE;
+AudioSnippet SEP;
+AudioPlayer MAIN;
+AudioPlayer SUB;
+
+
+
+//配線ゲーム用宣言
+PImage den, den2, koka, zyu;
+int K = 0;
+int R, G, B;
+
+//鼻の骨折を治すゲーム用宣言
+PImage NosePicture1, NosePicture2, Finger;
+
+
+//プレゼント選びのゲーム用宣言
+PImage ManDefault, ManLove, Present1, Present2, Present3;
+
+//水道管を治すゲーム用の宣言
+PImage Nat1, Nat2, WaterPicture, Pipe1, Pipe2, Rench1, Rench2, ScoreBar;
+
+//テレビゲーム用の宣言
+PImage TV, TVR, ude1, ude2;
 
 //抽象クラス画面遷移用宣言
 State state;
@@ -27,10 +67,12 @@ State state;
 MasterMainMenu menu;
 MasterMainResult result;
 MasterInterception interception;
-MasterJigsawPuzzle puzzle;
+MasterElectro electro;
 MasterOutOfInk ink;
 MasterStickFigure figure;
-MasterToothDecay toothdecay;
+MasterTVRepair tv_re;
+MasterPresentSelection present;
+MasterWaterPipe water;
 
 //パーティクル用クラス宣言
 Spot[] spot = new Spot[100];
@@ -43,23 +85,45 @@ boolean DebugMode;
 boolean GameMiss;//ミスしたときに画面をきしませる
 boolean ClearEff;
 boolean EffectFlag;
+boolean Music;
+boolean DoMusic;
 
 int StartTime;//そのゲームが開始した時間を記憶。タイマーに使う。
 int mouseKey = 0;           //マウス
 int KeyType=0;              //キーボード入力
+int SuccessTimer;
+float DistanceSum;
+int NowScreen;
+int HitCheck = 0;
+int ScoreResult;
 
 PFont Font001, Font002;     //（フォントデータ）
 
-PImage Machine, Pen, EnemyRight, EnemyLeft,CharacterLeft1,CharacterLeft2,CharacterRight1,CharacterRight2,CharacterFront,Burret;
-PImage logo, Start, spanner,Success,Finish,Miss;
-PImage Mission1,Mission2,Mission3,Mission4,Mission5,Mission6,Mission7;
+PImage Machine, Pen, EnemyRight, EnemyLeft, CharacterLeft1, CharacterLeft2, CharacterRight1, CharacterRight2, CharacterFront, Burret;
+PImage logo, Start, spanner, Success, Finish, Miss, ResultRank1, ResultRank2, ResultRank3;
+PImage Mission1, Mission2, Mission3, Mission4, Mission5, Mission6, Mission7, Mission8;
 
 void setup() {
-  size(1366,768);
+  smooth(32);
+  frameRate(60);
+  //size(1366,768);
+  fullScreen();
 
   state = new MainMenu();//最初にとぶのはメニュー画面
   h = new HandyRenderer(this);//Handy宣言
   controlP5 = new ControlP5(this);//デバッグ用宣言
+
+  //音関連
+  minim =new Minim(this);
+  EL= minim.loadSnippet("EL.mp3");
+  ELC= minim.loadSnippet("ELC.mp3");  
+  NSEC= minim.loadSnippet("Nose.mp3");
+  NSE= minim.loadSnippet("SU.mp3"); 
+  SEC= minim.loadSnippet("clear.mp3");
+  SEP = minim.loadSnippet("pai.mp3");
+  TSE = minim.loadSnippet("ta.mp3");
+  MAIN=minim.loadFile("Repair_main_loop.mp3", 2048);
+  SUB=minim.loadFile("Repair_main_loop_another.mp3", 2048);
 
   //初期化
   DoFigureMouse=false;//棒人間のゲームに入ったらtrueにして、出たら閉じる。
@@ -68,11 +132,10 @@ void setup() {
   GameMiss=false;
   ClearEff=false;
   EffectFlag=false;
+  Music=false;
+  DoMusic=false;
 
   //各々のロード
-  //フォント類
-  Font001=createFont("游ゴシック Light", 24, true);
-  Font002=createFont("AgencyFB-Bold-48", 24, true);
   //画像類
   Machine=loadImage("Machine.png");
   Pen=loadImage("Pen.png");
@@ -82,6 +145,13 @@ void setup() {
   spanner = loadImage("spanner.png");
   Start = loadImage("Start.png");
   Mission1=loadImage("mission1.png");
+  Mission2=loadImage("mission2.png");
+  Mission3=loadImage("mission3.png");
+  Mission4=loadImage("mission4.png");
+  Mission5=loadImage("mission5.png");
+  Mission6=loadImage("mission6.png");
+  Mission7=loadImage("mission7.png");
+  Mission8=loadImage("mission8.png");
   CharacterLeft1=loadImage("CharaLeft1.png");
   CharacterLeft2=loadImage("CharaLeft2.png");
   CharacterRight1=loadImage("CharaRight1.png");
@@ -91,16 +161,39 @@ void setup() {
   Success=loadImage("success.png");
   Finish=loadImage("Finish.png");
   Miss=loadImage("miss.png");
-  
-  //パーティクルの初期化
-  for (int i = 0; i < 100; i++) {
-    PVector loc = new PVector(width/2, height/2);
-    PVector vec = new PVector(random(-1, 1)*12, random(-1, 1)*12);
-    spot[i] = new Spot(loc, vec, random(10, 30));
-  }
+  den = loadImage("den.png");
+  den2 = loadImage("den2.png");
+  koka = loadImage("koka.png");
+  zyu = loadImage("zyuu.png");
+  NosePicture1 = loadImage("ha3 (1).png");
+  NosePicture2 = loadImage("ha3 (2).png");
+  Finger = loadImage("yu.png");
+  ManDefault = loadImage("h1.png");
+  ManLove = loadImage("h2.png");
+  Present1 = loadImage("p1.png");
+  Present2 = loadImage("p2.png");
+  Present3 = loadImage("p3.png");
+  Nat1 = loadImage("61.png");
+  Nat2 = loadImage("62.png");
+  WaterPicture =  loadImage("mizu.png");
+  Pipe1 =  loadImage("ha1.png");
+  Pipe2 =  loadImage("ha2.png");
+  Rench1 =  loadImage("re1.png");
+  Rench2 =  loadImage("re2.png");
+  ScoreBar = loadImage("score.jpg");
+  TV = loadImage("TV.png");
+  TVR = loadImage("TVR.png");
+  ude1 = loadImage("UM.png");
+  ude2 = loadImage("UN.png");
+  ResultRank1=loadImage("rankA.png");
+  ResultRank2=loadImage("rankB.png");
+  ResultRank3=loadImage("rankC.png");
+
+  ScoreResult=0;
 }
 
 void draw() {
+  DebugMode=true;
   background(255);
   state=state.doState();
   if (GameMiss) Viberation();
@@ -118,4 +211,22 @@ abstract class State {
 
   abstract void drawState();    // 状態に応じた描画を行う
   abstract State decideState(); // 次の状態を返す
+}
+
+void keyPressed() {
+  if ( key == 'k' ) {
+    print(1);
+    if (SUB.isPlaying()) {
+      SUB.pause();
+    }
+    MAIN.loop();
+    Music=true;
+  }
+  if (Music&&NowScreen==10&& key == 'l' ) {
+    if (MAIN.isPlaying()) {
+      MAIN.pause();
+    }
+    SUB.loop();
+    Music=false;
+  }
 }

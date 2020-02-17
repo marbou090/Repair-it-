@@ -3,6 +3,7 @@ class ResultMenu extends State {
     if (Initialize) {
       result =new MasterMainResult();
       Initialize=false;
+      NowScreen=10;
     }
     result.DoResult();
   }
@@ -35,6 +36,19 @@ class MasterMainResult {
   }
 
   public void DoResult() {
-    Wall();
+
+    if (ScoreResult<=60) {
+      image(ResultRank1, 0, 0);
+    } else if (ScoreResult<=120&&ScoreResult>60) {
+      image(ResultRank2, 0, 0);
+    } else {
+      image(ResultRank3, 0, 0);
+    }
+    if(mouseKey==1){
+      NextGame=true;
+    }
+    //fill(0);
+    //textSize(40);
+    //text("100おくまんてん！", width/2, height/3);
   }
 }

@@ -15,6 +15,7 @@ class Spot {
   }
   // 描画
   void display() {
+    colorMode(HSB);
     stroke(Color, 100, 256, 200);
     strokeWeight(3);
     fill(Color, 256, 256);
@@ -24,6 +25,7 @@ class Spot {
     if (diameter<0) {
      //NextGame=true;
     }
+    colorMode(RGB);
   }
   void fade() {
     diameter -= 0.9;
